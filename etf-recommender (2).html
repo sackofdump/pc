@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Compass</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2430;
+    --accent: #00e5a0;
+    --accent2: #ff6b35;
+    --accent3: #4d9fff;
+    --text: #e8ecf0;
+    --muted: #5a6478;
+    --aggressive: #ff4d6d;
+    --moderate: #ffd166;
+    --conservative: #06d6a0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 40px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .logo span {
+    color: var(--accent);
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-left: 48px;
+  }
+
+  /* Main layout */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 800px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Panel */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .panel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Stock input */
+  .stock-form {
+    padding: 20px 24px;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 80px auto;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  input[type="text"], input[type="number"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input[type="text"]::placeholder,
+  input[type="number"]::placeholder {
+    color: var(--muted);
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  .btn-add {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    line-height: 1;
+  }
+
+  .btn-add:hover { opacity: 0.85; }
+  .btn-add:active { transform: scale(0.96); }
+
+  /* Stock list */
+  .stock-list {
+    padding: 0 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 40px;
+  }
+
+  .stock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stock-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stock-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .stock-sector {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .stock-weight {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .btn-remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+
+  .btn-remove:hover { color: var(--aggressive); }
+
+  /* Portfolio summary */
+  .portfolio-summary {
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .summary-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+
+  .summary-chip strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Analyze button */
+  .btn-analyze {
+    margin: 0 24px 24px;
+    width: calc(100% - 48px);
+    background: linear-gradient(135deg, var(--accent), #00b87a);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,229,160,0.2);
+  }
+
+  .btn-analyze:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 30px rgba(0,229,160,0.4);
+  }
+
+  .btn-analyze:active { transform: scale(0.98); }
+  .btn-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Empty state */
+  .empty-state {
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Results panel */
+  .results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .placeholder-panel {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    padding: 60px 32px;
+    text-align: center;
+  }
+
+  .placeholder-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  .placeholder-text {
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  /* Strategy card */
+  .strategy-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease backwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .strategy-card:nth-child(2) { animation-delay: 0.1s; }
+  .strategy-card:nth-child(3) { animation-delay: 0.2s; }
+
+  .strategy-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .strategy-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .strategy-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .badge-aggressive { background: rgba(255,77,109,0.15); color: var(--aggressive); border: 1px solid rgba(255,77,109,0.3); }
+  .badge-moderate { background: rgba(255,209,102,0.15); color: var(--moderate); border: 1px solid rgba(255,209,102,0.3); }
+  .badge-conservative { background: rgba(6,214,160,0.15); color: var(--conservative); border: 1px solid rgba(6,214,160,0.3); }
+
+  .strategy-desc {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    max-width: 200px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* ── High-Conviction Stock Picks ── */
+  .picks-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,77,109,0.25);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease backwards;
+    animation-delay: 0.35s;
+  }
+
+  .picks-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,77,109,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,77,109,0.04);
+  }
+
+  .picks-title-group { display: flex; flex-direction: column; gap: 4px; }
+
+  .picks-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    background: rgba(255,77,109,0.12);
+    color: var(--aggressive);
+    border: 1px solid rgba(255,77,109,0.3);
+    width: fit-content;
+    margin-bottom: 2px;
+  }
+
+  .picks-warning {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  .picks-list {
+    padding: 12px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pick-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .pick-item:hover {
+    border-color: var(--aggressive);
+    box-shadow: 0 0 0 1px rgba(255,77,109,0.1);
+  }
+
+  .pick-item.open { border-color: var(--aggressive); }
+
+  .pick-item-header {
+    padding: 11px 14px;
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .pick-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .pick-details h4 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .pick-details p  { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  .pick-meta { text-align: right; }
+
+  .pick-sector-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255,77,109,0.1);
+    color: var(--aggressive);
+    display: inline-block;
+    margin-bottom: 3px;
+  }
+
+  .pick-risk {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .pick-hint {
+    padding: 0 14px 9px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--aggressive);
+    opacity: 0.55;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.2s;
+  }
+  .pick-item:hover .pick-hint { opacity: 1; }
+  .pick-item.open .pick-hint  { display: none; }
+
+  .pick-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .pick-item.open .pick-drawer { max-height: 300px; }
+
+  .pick-drawer-inner {
+    margin: 0 12px 12px;
+    background: rgba(255,77,109,0.05);
+    border: 1px solid rgba(255,77,109,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .pick-drawer-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--aggressive);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  .pick-drawer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  /* ETF list in card */
+  .etf-list {
+    padding: 12px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .etf-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .etf-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,229,160,0.1);
+  }
+
+  .etf-item.open {
+    border-color: var(--accent);
+  }
+
+  .etf-item-header {
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .etf-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .etf-details h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .etf-details p {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .etf-meta {
+    text-align: right;
+  }
+
+  .etf-exp {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .match-score {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  .match-high { background: rgba(0,229,160,0.15); color: var(--accent); }
+  .match-med { background: rgba(255,209,102,0.15); color: var(--moderate); }
+
+  /* Why prompt hint */
+  .etf-hint {
+    padding: 0 16px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.2s;
+  }
+  .etf-item:hover .etf-hint { opacity: 1; }
+  .etf-item.open .etf-hint { display: none; }
+
+  /* Expand drawer */
+  .etf-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .etf-item.open .etf-drawer {
+    max-height: 300px;
+  }
+
+  .etf-drawer-inner {
+    margin: 0 14px 14px;
+    background: rgba(0,229,160,0.05);
+    border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 8px;
+    padding: 13px 15px;
+  }
+
+  .etf-drawer-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .etf-drawer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .etf-drawer-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .mini-spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* Portfolio analysis bar */
+  .analysis-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px 16px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .analysis-bar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .analysis-bar-header h3 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .breakdown-legend {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .legend-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    opacity: 0.45;
+    letter-spacing: 0.3px;
+    margin-left: 2px;
+    font-style: italic;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 6px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .legend-dot-current { background: #64748b; border-radius: 2px; }
+
+  .legend-tick {
+    width: 2px;
+    height: 12px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .legend-tick-agg { background: var(--aggressive); }
+  .legend-tick-mod { background: var(--moderate); }
+  .legend-tick-con { background: var(--conservative); }
+
+  /* Legend item hoverable */
+  .legend-item.hoverable {
+    cursor: pointer;
+    padding: 3px 7px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .legend-item.hoverable:hover,
+  .legend-item.hoverable.active {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border);
+  }
+  .legend-item.hoverable.active-agg { color: var(--aggressive); border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.08); }
+  .legend-item.hoverable.active-mod { color: var(--moderate);   border-color: rgba(255,209,102,0.3); background: rgba(255,209,102,0.08); }
+  .legend-item.hoverable.active-con { color: var(--conservative);    border-color: rgba(6,214,160,0.3); background: rgba(6,214,160,0.08); }
+
+  /* Strategy tooltip */
+  .legend-item.hoverable {
+    position: relative;
+  }
+
+  .strategy-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background: #1a1f2e;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    transform: translateX(-50%) translateY(4px);
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  .legend-item.hoverable:hover .strategy-tooltip,
+  .legend-item.hoverable.active .strategy-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .strategy-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border);
+  }
+
+  .tooltip-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tooltip-label.agg { color: var(--aggressive); }
+  .tooltip-label.mod { color: var(--moderate); }
+  .tooltip-label.con { color: var(--conservative); }
+
+  .tooltip-body {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.65;
+    opacity: 0.8;
+  }
+
+  .tooltip-note {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .sector-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .sector-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 32px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sector-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sector-pct {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    text-align: right;
+    font-weight: 700;
+  }
+
+  /* Single bar with hover-reveal strategy overlays */
+  .sector-bar-track {
+    position: relative;
+    background: var(--surface2);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .sector-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Strategy overlay bar — hidden by default, shown on legend hover */
+  .sector-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.25s ease, width 0.9s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .sector-overlay.agg { background: rgba(255,77,109,0.55); }
+  .sector-overlay.mod { background: rgba(255,209,102,0.55); }
+  .sector-overlay.con { background: rgba(6,214,160,0.55); }
+
+  /* Activated by JS class on .sector-bars parent */
+  .sector-bars.show-agg .sector-overlay.agg { opacity: 1; }
+  .sector-bars.show-mod .sector-overlay.mod { opacity: 1; }
+  .sector-bars.show-con .sector-overlay.con { opacity: 1; }
+
+  /* Missing sector additions */
+  .sector-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 10px;
+  }
+  .sector-divider::before, .sector-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .sector-divider span {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sector-row.missing .sector-name { opacity: 0.45; }
+  .sector-row.missing .sector-pct  { color: var(--muted); font-weight: 400; }
+
+  .sector-bar-track.empty {
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(255,255,255,0.08);
+  }
+
+  /* ETF / STOCK type tags */
+  .ticker-with-tag {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .item-type-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .tag-etf {
+    background: rgba(77,159,255,0.15);
+    color: #4d9fff;
+    border: 1px solid rgba(77,159,255,0.3);
+  }
+
+  .tag-stock {
+    background: rgba(255,77,109,0.12);
+    color: var(--aggressive);
+    border: 1px solid rgba(255,77,109,0.25);
+  }
+
+  /* Disclaimer footer */
+  .disclaimer-footer {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    opacity: 0.5;
+    padding: 12px 8px 4px;
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  .error-msg {
+    color: var(--aggressive);
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    padding: 4px 0 8px 0;
+  }
+
+  /* ── Screenshot Upload ── */
+  .upload-zone {
+    margin: 0 24px 16px;
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0,229,160,0.04);
+  }
+
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+
+  .upload-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .upload-label strong {
+    color: var(--accent);
+    display: block;
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+
+  .upload-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 24px 16px;
+  }
+
+  .upload-divider::before,
+  .upload-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .upload-divider span {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Scanning overlay */
+  .scanning-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: 12px;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .scanning-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .scan-spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .scan-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Import preview */
+  .import-preview {
+    margin: 0 24px 12px;
+    background: rgba(0,229,160,0.06);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: none;
+  }
+
+  .import-preview.visible { display: block; }
+
+  .import-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .import-preview-header h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .btn-import-all {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-import-all:hover { opacity: 0.85; }
+
+  .preview-items {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+
+  .preview-item {
+    display: grid;
+    grid-template-columns: 52px 1fr 70px 20px;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 7px 10px;
+  }
+
+  .preview-ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .preview-name {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .preview-pct-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .preview-pct-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    width: 48px;
+    outline: none;
+    text-align: right;
+  }
+
+  .preview-pct-input:focus { border-color: var(--accent); }
+
+  .preview-pct-symbol {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .btn-preview-remove {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .btn-preview-remove:hover { color: var(--aggressive); }
+
+  .import-note {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon"></div>
+      <h1>Portfolio <span>Compass</span></h1>
+    </div>
+    <div class="tagline">Portfolio Diversification &amp; Strategy Analyzer</div>
+  </header>
+
+  <div class="main-grid">
+    <!-- Left: Input Panel -->
+    <div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-dot"></div>
+          <h2>Your Holdings</h2>
+        </div>
+
+        <!-- Screenshot Upload -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="screenshotInput" accept="image/*" onchange="handleScreenshot(event)" />
+          <div class="scanning-overlay" id="scanningOverlay">
+            <div class="scan-spinner"></div>
+            <div class="scan-text">Scanning portfolio...</div>
+          </div>
+          <div class="upload-icon">📸</div>
+          <div class="upload-label">
+            <strong>Import from Screenshot</strong>
+            Drop or click to upload a portfolio screenshot.<br>
+            Claude AI will detect your tickers automatically.
+          </div>
+        </div>
+
+        <!-- Import Preview -->
+        <div class="import-preview" id="importPreview">
+          <div class="import-preview-header">
+            <h4>✦ Detected Holdings</h4>
+            <button class="btn-import-all" onclick="importAll()">Add All →</button>
+          </div>
+          <div class="preview-items" id="previewItems"></div>
+          <div class="import-note" id="importNote"></div>
+        </div>
+
+        <div class="upload-divider"><span>or add manually</span></div>
+
+        <div class="stock-form">
+          <div class="input-row">
+            <input type="text" id="tickerInput" placeholder="Ticker (e.g. AAPL)" maxlength="6" />
+            <input type="number" id="pctInput" placeholder="%" min="1" max="100" />
+            <button class="btn-add" onclick="addStock()" title="Add">+</button>
+          </div>
+          <div class="error-msg" id="errorMsg"></div>
+        </div>
+
+        <div class="stock-list" id="stockList">
+          <div class="empty-state" id="emptyState">No holdings added yet.</div>
+        </div>
+
+        <div class="portfolio-summary" id="portfolioSummary" style="display:none">
+          <div class="summary-chip">Holdings: <strong id="holdingCount">0</strong></div>
+          <div class="summary-chip">Allocation: <strong id="allocTotal">0%</strong></div>
+          <div class="summary-chip">Risk: <strong id="riskLabel">—</strong></div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" onclick="analyze()" disabled>
+          Analyze &amp; Recommend
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Results Panel -->
+    <div class="results-panel" id="resultsPanel">
+      <div class="placeholder-panel">
+        <div class="placeholder-icon">◎</div>
+        <div class="placeholder-text">
+          Add your US stock holdings<br>on the left, then click<br><strong style="color:var(--text)">Analyze &amp; Recommend</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+const STOCK_DB = {
+  // ── Tech / Software ──
+  AAPL:  { name: 'Apple',            sector: 'Big Tech',        beta: 1.2,  cap: 'mega'  },
+  MSFT:  { name: 'Microsoft',        sector: 'Big Tech',        beta: 0.9,  cap: 'mega'  },
+  GOOGL: { name: 'Alphabet A',       sector: 'Big Tech',        beta: 1.1,  cap: 'mega'  },
+  GOOG:  { name: 'Alphabet C',       sector: 'Big Tech',        beta: 1.1,  cap: 'mega'  },
+  META:  { name: 'Meta',             sector: 'Social Media',    beta: 1.4,  cap: 'mega'  },
+  NVDA:  { name: 'NVIDIA',           sector: 'Semiconductors',  beta: 1.9,  cap: 'mega'  },
+  AMD:   { name: 'AMD',              sector: 'Semiconductors',  beta: 1.8,  cap: 'large' },
+  INTC:  { name: 'Intel',            sector: 'Semiconductors',  beta: 1.0,  cap: 'large' },
+  AVGO:  { name: 'Broadcom',         sector: 'Semiconductors',  beta: 1.3,  cap: 'mega'  },
+  QCOM:  { name: 'Qualcomm',         sector: 'Semiconductors',  beta: 1.2,  cap: 'large' },
+  TSM:   { name: 'TSMC',             sector: 'Semiconductors',  beta: 1.3,  cap: 'mega'  },
+  TSMC:  { name: 'TSMC',             sector: 'Semiconductors',  beta: 1.3,  cap: 'mega'  },
+  CRM:   { name: 'Salesforce',       sector: 'Software / SaaS', beta: 1.3,  cap: 'large' },
+  ORCL:  { name: 'Oracle',           sector: 'Software / SaaS', beta: 1.1,  cap: 'large' },
+  ADBE:  { name: 'Adobe',            sector: 'Software / SaaS', beta: 1.2,  cap: 'large' },
+  NOW:   { name: 'ServiceNow',       sector: 'Software / SaaS', beta: 1.3,  cap: 'large' },
+  SNOW:  { name: 'Snowflake',        sector: 'Software / SaaS', beta: 1.6,  cap: 'large' },
+  PLTR:  { name: 'Palantir',         sector: 'Software / SaaS', beta: 1.8,  cap: 'large' },
+  // ── AI & Robotics ──
+  SOUN:  { name: 'SoundHound AI',    sector: 'AI & Robotics',   beta: 2.5,  cap: 'small' },
+  RBLX:  { name: 'Roblox',           sector: 'AI & Robotics',   beta: 1.9,  cap: 'mid'   },
+  PATH:  { name: 'UiPath',           sector: 'AI & Robotics',   beta: 1.5,  cap: 'mid'   },
+  // ── Fintech / Payments ──
+  HOOD:  { name: 'Robinhood',        sector: 'Fintech',         beta: 1.8,  cap: 'mid'   },
+  SQ:    { name: 'Block (Square)',   sector: 'Fintech',         beta: 1.9,  cap: 'large' },
+  PYPL:  { name: 'PayPal',           sector: 'Fintech',         beta: 1.4,  cap: 'large' },
+  AFRM:  { name: 'Affirm',           sector: 'Fintech',         beta: 2.2,  cap: 'mid'   },
+  SOFI:  { name: 'SoFi',             sector: 'Fintech',         beta: 1.7,  cap: 'mid'   },
+  COIN:  { name: 'Coinbase',         sector: 'Crypto / Bitcoin',beta: 2.5,  cap: 'large' },
+  MSTR:  { name: 'MicroStrategy',    sector: 'Crypto / Bitcoin',beta: 3.0,  cap: 'large' },
+  // ── Traditional Finance ──
+  JPM:   { name: 'JP Morgan',        sector: 'Banking',         beta: 1.1,  cap: 'mega'  },
+  BAC:   { name: 'Bank of America',  sector: 'Banking',         beta: 1.3,  cap: 'mega'  },
+  WFC:   { name: 'Wells Fargo',      sector: 'Banking',         beta: 1.2,  cap: 'large' },
+  GS:    { name: 'Goldman Sachs',    sector: 'Banking',         beta: 1.4,  cap: 'large' },
+  MS:    { name: 'Morgan Stanley',   sector: 'Banking',         beta: 1.3,  cap: 'large' },
+  C:     { name: 'Citigroup',        sector: 'Banking',         beta: 1.4,  cap: 'large' },
+  V:     { name: 'Visa',             sector: 'Banking',         beta: 0.9,  cap: 'mega'  },
+  MA:    { name: 'Mastercard',       sector: 'Banking',         beta: 0.95, cap: 'mega'  },
+  BRK:   { name: 'Berkshire',        sector: 'Banking',         beta: 0.8,  cap: 'mega'  },
+  AXP:   { name: 'Amex',             sector: 'Banking',         beta: 1.1,  cap: 'large' },
+  // ── Healthcare / Biotech ──
+  JNJ:   { name: 'J&J',              sector: 'Healthcare',      beta: 0.6,  cap: 'mega'  },
+  UNH:   { name: 'UnitedHealth',     sector: 'Healthcare',      beta: 0.7,  cap: 'mega'  },
+  PFE:   { name: 'Pfizer',           sector: 'Healthcare',      beta: 0.7,  cap: 'mega'  },
+  ABBV:  { name: 'AbbVie',           sector: 'Healthcare',      beta: 0.65, cap: 'large' },
+  MRK:   { name: 'Merck',            sector: 'Healthcare',      beta: 0.55, cap: 'mega'  },
+  LLY:   { name: 'Eli Lilly',        sector: 'Healthcare',      beta: 0.4,  cap: 'mega'  },
+  MRNA:  { name: 'Moderna',          sector: 'Biotech',         beta: 1.5,  cap: 'large' },
+  BNTX:  { name: 'BioNTech',         sector: 'Biotech',         beta: 1.4,  cap: 'large' },
+  GILD:  { name: 'Gilead',           sector: 'Biotech',         beta: 0.7,  cap: 'large' },
+  BIIB:  { name: 'Biogen',           sector: 'Biotech',         beta: 0.7,  cap: 'large' },
+  // ── E-Commerce / Retail ──
+  AMZN:  { name: 'Amazon',           sector: 'E-Commerce',      beta: 1.2,  cap: 'mega'  },
+  SHOP:  { name: 'Shopify',          sector: 'E-Commerce',      beta: 1.8,  cap: 'large' },
+  ETSY:  { name: 'Etsy',             sector: 'E-Commerce',      beta: 1.6,  cap: 'mid'   },
+  EBAY:  { name: 'eBay',             sector: 'E-Commerce',      beta: 1.1,  cap: 'large' },
+  WMT:   { name: 'Walmart',          sector: 'Retail',          beta: 0.6,  cap: 'mega'  },
+  TGT:   { name: 'Target',           sector: 'Retail',          beta: 0.9,  cap: 'large' },
+  COST:  { name: 'Costco',           sector: 'Retail',          beta: 0.7,  cap: 'mega'  },
+  HD:    { name: 'Home Depot',       sector: 'Retail',          beta: 1.0,  cap: 'large' },
+  LOW:   { name: "Lowe's",           sector: 'Retail',          beta: 1.0,  cap: 'large' },
+  // ── Apparel / Fashion ──
+  NKE:   { name: 'Nike',             sector: 'Apparel',         beta: 1.1,  cap: 'large' },
+  LULU:  { name: 'Lululemon',        sector: 'Apparel',         beta: 1.3,  cap: 'large' },
+  PVH:   { name: 'PVH Corp',         sector: 'Apparel',         beta: 1.2,  cap: 'mid'   },
+  // ── Food & Beverage ──
+  MCD:   { name: "McDonald's",       sector: 'Food & Beverage', beta: 0.7,  cap: 'large' },
+  SBUX:  { name: 'Starbucks',        sector: 'Food & Beverage', beta: 0.9,  cap: 'large' },
+  PG:    { name: 'P&G',              sector: 'Consumer Staples',beta: 0.55, cap: 'mega'  },
+  KO:    { name: 'Coca-Cola',        sector: 'Consumer Staples',beta: 0.55, cap: 'mega'  },
+  PEP:   { name: 'PepsiCo',          sector: 'Consumer Staples',beta: 0.55, cap: 'mega'  },
+  // ── EVs / Autos ──
+  TSLA:  { name: 'Tesla',            sector: 'EVs & Autos',     beta: 2.0,  cap: 'mega'  },
+  RIVN:  { name: 'Rivian',           sector: 'EVs & Autos',     beta: 2.2,  cap: 'mid'   },
+  LCID:  { name: 'Lucid',            sector: 'EVs & Autos',     beta: 2.0,  cap: 'mid'   },
+  NIO:   { name: 'NIO',              sector: 'EVs & Autos',     beta: 1.9,  cap: 'mid'   },
+  F:     { name: 'Ford',             sector: 'EVs & Autos',     beta: 1.3,  cap: 'large' },
+  GM:    { name: 'GM',               sector: 'EVs & Autos',     beta: 1.2,  cap: 'large' },
+  // ── Entertainment / Streaming ──
+  NFLX:  { name: 'Netflix',          sector: 'Entertainment',   beta: 1.3,  cap: 'large' },
+  DIS:   { name: 'Disney',           sector: 'Entertainment',   beta: 1.0,  cap: 'large' },
+  PARA:  { name: 'Paramount',        sector: 'Entertainment',   beta: 1.2,  cap: 'mid'   },
+  WBD:   { name: 'Warner Bros',      sector: 'Entertainment',   beta: 1.3,  cap: 'mid'   },
+  // ── Music / Audio ──
+  SPOT:  { name: 'Spotify',          sector: 'Entertainment',   beta: 1.5,  cap: 'large' },
+  // ── Sports Betting / Gaming ──
+  DKNG:  { name: 'DraftKings',       sector: 'Sports Betting',  beta: 2.0,  cap: 'large' },
+  MGM:   { name: 'MGM Resorts',      sector: 'Sports Betting',  beta: 1.6,  cap: 'large' },
+  PENN:  { name: 'Penn Entertainment',sector:'Sports Betting',  beta: 1.8,  cap: 'mid'   },
+  // ── Travel / Ride-share ──
+  UBER:  { name: 'Uber',             sector: 'Travel & Mobility',beta: 1.5, cap: 'large' },
+  LYFT:  { name: 'Lyft',             sector: 'Travel & Mobility',beta: 1.8, cap: 'mid'   },
+  ABNB:  { name: 'Airbnb',           sector: 'Travel & Mobility',beta: 1.5, cap: 'large' },
+  BKNG:  { name: 'Booking',          sector: 'Travel & Mobility',beta: 1.2, cap: 'large' },
+  MAR:   { name: 'Marriott',         sector: 'Travel & Mobility',beta: 1.1, cap: 'large' },
+  // ── Pets / Specialty Retail ──
+  CHWY:  { name: 'Chewy',            sector: 'Pets & Specialty', beta: 1.6, cap: 'mid'   },
+  // ── China / Emerging Market Stocks ──
+  BABA:  { name: 'Alibaba',          sector: 'China / Emerging', beta: 1.4, cap: 'mega'  },
+  JD:    { name: 'JD.com',           sector: 'China / Emerging', beta: 1.3, cap: 'large' },
+  TCEHY: { name: 'Tencent',          sector: 'China / Emerging', beta: 1.2, cap: 'mega'  },
+  PDD:   { name: 'PDD / Temu',       sector: 'China / Emerging', beta: 1.5, cap: 'mega'  },
+  // ── Energy ──
+  XOM:   { name: 'ExxonMobil',       sector: 'Oil & Gas',       beta: 0.85, cap: 'mega'  },
+  CVX:   { name: 'Chevron',          sector: 'Oil & Gas',       beta: 0.9,  cap: 'mega'  },
+  COP:   { name: 'ConocoPhillips',   sector: 'Oil & Gas',       beta: 1.0,  cap: 'large' },
+  OXY:   { name: 'Occidental',       sector: 'Oil & Gas',       beta: 1.2,  cap: 'large' },
+  NEE:   { name: 'NextEra Energy',   sector: 'Clean Energy',    beta: 0.5,  cap: 'large' },
+  ENPH:  { name: 'Enphase',          sector: 'Clean Energy',    beta: 1.5,  cap: 'large' },
+  FSLR:  { name: 'First Solar',      sector: 'Clean Energy',    beta: 1.3,  cap: 'large' },
+  // ── Industrials / Defense ──
+  BA:    { name: 'Boeing',           sector: 'Defense',         beta: 1.4,  cap: 'large' },
+  LMT:   { name: 'Lockheed Martin',  sector: 'Defense',         beta: 0.8,  cap: 'large' },
+  RTX:   { name: 'RTX Corp',         sector: 'Defense',         beta: 0.9,  cap: 'large' },
+  CAT:   { name: 'Caterpillar',      sector: 'Industrials',     beta: 1.15, cap: 'large' },
+  GE:    { name: 'GE',               sector: 'Industrials',     beta: 1.1,  cap: 'large' },
+  HON:   { name: 'Honeywell',        sector: 'Industrials',     beta: 1.0,  cap: 'large' },
+  UPS:   { name: 'UPS',              sector: 'Industrials',     beta: 1.1,  cap: 'large' },
+  // ── Real Estate ──
+  AMT:   { name: 'American Tower',   sector: 'Real Estate',     beta: 0.8,  cap: 'large' },
+  PLD:   { name: 'Prologis',         sector: 'Real Estate',     beta: 0.9,  cap: 'large' },
+  // ── Utilities ──
+  DUK:   { name: 'Duke Energy',      sector: 'Utilities',       beta: 0.4,  cap: 'large' },
+  SO:    { name: 'Southern Co',      sector: 'Utilities',       beta: 0.4,  cap: 'large' },
+  // ── Materials ──
+  LIN:   { name: 'Linde',            sector: 'Materials',       beta: 0.85, cap: 'large' },
+  FCX:   { name: 'Freeport-McMoRan', sector: 'Materials',       beta: 1.4,  cap: 'large' },
+  NEM:   { name: 'Newmont',          sector: 'Gold & Metals',   beta: 0.9,  cap: 'large' },
+  GOLD:  { name: 'Barrick Gold',     sector: 'Gold & Metals',   beta: 0.85, cap: 'large' },
+  AEM:   { name: 'Agnico Eagle',     sector: 'Gold & Metals',   beta: 0.8,  cap: 'large' },
+
+  // ══ ETFs ══════════════════════════════════════════════
+  // Broad Market
+  SPY:   { name: 'S&P 500 ETF',         sector: 'Broad Market',    beta: 1.0,  cap: 'etf'   },
+  VOO:   { name: 'Vanguard S&P 500',    sector: 'Broad Market',    beta: 1.0,  cap: 'etf'   },
+  VTI:   { name: 'Total Market ETF',    sector: 'Broad Market',    beta: 1.0,  cap: 'etf'   },
+  IVV:   { name: 'iShares S&P 500',     sector: 'Broad Market',    beta: 1.0,  cap: 'etf'   },
+  RSP:   { name: 'Equal Weight S&P 500',sector: 'Broad Market',    beta: 1.0,  cap: 'etf'   },
+  // Tech ETFs
+  QQQ:   { name: 'NASDAQ-100 ETF',      sector: 'Big Tech',        beta: 1.3,  cap: 'etf'   },
+  XLK:   { name: 'Tech Sector SPDR',    sector: 'Big Tech',        beta: 1.3,  cap: 'etf'   },
+  IGV:   { name: 'Software ETF',        sector: 'Software / SaaS', beta: 1.3,  cap: 'etf'   },
+  SOXX:  { name: 'Semiconductor ETF',   sector: 'Semiconductors',  beta: 1.8,  cap: 'etf'   },
+  SMH:   { name: 'Semiconductor ETF',   sector: 'Semiconductors',  beta: 1.8,  cap: 'etf'   },
+  ARKK:  { name: 'ARK Innovation ETF',  sector: 'AI & Robotics',   beta: 2.1,  cap: 'etf'   },
+  BOTZ:  { name: 'Robotics & AI ETF',   sector: 'AI & Robotics',   beta: 1.6,  cap: 'etf'   },
+  ROBO:  { name: 'Robotics ETF',        sector: 'AI & Robotics',   beta: 1.5,  cap: 'etf'   },
+  // Gold & Commodities
+  GLD:   { name: 'SPDR Gold Shares',    sector: 'Gold & Metals',   beta: 0.05, cap: 'etf'   },
+  IAU:   { name: 'iShares Gold ETF',    sector: 'Gold & Metals',   beta: 0.05, cap: 'etf'   },
+  SLV:   { name: 'iShares Silver ETF',  sector: 'Gold & Metals',   beta: 0.3,  cap: 'etf'   },
+  GDX:   { name: 'Gold Miners ETF',     sector: 'Gold & Metals',   beta: 0.9,  cap: 'etf'   },
+  USO:   { name: 'US Oil Fund',         sector: 'Oil & Gas',       beta: 0.9,  cap: 'etf'   },
+  XLE:   { name: 'Energy Sector SPDR',  sector: 'Oil & Gas',       beta: 0.95, cap: 'etf'   },
+  // Bonds
+  BND:   { name: 'Total Bond Market',   sector: 'Bonds',           beta: 0.05, cap: 'etf'   },
+  AGG:   { name: 'US Aggregate Bond',   sector: 'Bonds',           beta: 0.05, cap: 'etf'   },
+  TLT:   { name: '20+ Year Treasury',   sector: 'Bonds',           beta: -0.1, cap: 'etf'   },
+  HYG:   { name: 'High Yield Bond ETF', sector: 'Bonds',           beta: 0.4,  cap: 'etf'   },
+  VTIP:  { name: 'Short-Term TIPS',     sector: 'Bonds',           beta: 0.05, cap: 'etf'   },
+  // International / Emerging
+  VWO:   { name: 'Emerging Markets ETF',sector: 'China / Emerging', beta: 1.0, cap: 'etf'   },
+  EEM:   { name: 'Emerging Markets ETF',sector: 'China / Emerging', beta: 1.1, cap: 'etf'   },
+  EFA:   { name: 'Developed Markets',   sector: 'International',   beta: 0.9,  cap: 'etf'   },
+  KWEB:  { name: 'China Internet ETF',  sector: 'China / Emerging', beta: 1.5, cap: 'etf'   },
+  // Sector ETFs
+  XLF:   { name: 'Financial Sector',    sector: 'Banking',         beta: 1.2,  cap: 'etf'   },
+  XLV:   { name: 'Healthcare Sector',   sector: 'Healthcare',      beta: 0.65, cap: 'etf'   },
+  XBI:   { name: 'Biotech ETF',         sector: 'Biotech',         beta: 1.6,  cap: 'etf'   },
+  XLC:   { name: 'Comm Services ETF',   sector: 'Entertainment',   beta: 1.1,  cap: 'etf'   },
+  XLY:   { name: 'Consumer Disc ETF',   sector: 'Retail',          beta: 1.1,  cap: 'etf'   },
+  XLP:   { name: 'Consumer Stap ETF',   sector: 'Consumer Staples',beta: 0.6,  cap: 'etf'   },
+  XLI:   { name: 'Industrials ETF',     sector: 'Industrials',     beta: 1.0,  cap: 'etf'   },
+  XLU:   { name: 'Utilities ETF',       sector: 'Utilities',       beta: 0.45, cap: 'etf'   },
+  XLRE:  { name: 'Real Estate ETF',     sector: 'Real Estate',     beta: 0.8,  cap: 'etf'   },
+  XLB:   { name: 'Materials ETF',       sector: 'Materials',       beta: 1.0,  cap: 'etf'   },
+  // Clean Energy
+  ICLN:  { name: 'Clean Energy ETF',    sector: 'Clean Energy',    beta: 1.3,  cap: 'etf'   },
+  QCLN:  { name: 'Clean Edge Energy',   sector: 'Clean Energy',    beta: 1.3,  cap: 'etf'   },
+  // Small / Mid Cap
+  IWM:   { name: 'Russell 2000 ETF',    sector: 'Small-Caps',      beta: 1.4,  cap: 'etf'   },
+  IJH:   { name: 'S&P MidCap 400',      sector: 'Small-Caps',      beta: 1.2,  cap: 'etf'   },
+  // Dividend / Value
+  SCHD:  { name: 'Dividend Equity ETF', sector: 'Dividends',       beta: 0.8,  cap: 'etf'   },
+  VYM:   { name: 'High Dividend Yield', sector: 'Dividends',       beta: 0.75, cap: 'etf'   },
+  VIG:   { name: 'Dividend Appreciation',sector:'Dividends',       beta: 0.85, cap: 'etf'   },
+  // Fintech ETF
+  FINX:  { name: 'Fintech ETF',         sector: 'Fintech',         beta: 1.5,  cap: 'etf'   },
+  ARKF:  { name: 'ARK Fintech ETF',     sector: 'Fintech',         beta: 2.0,  cap: 'etf'   },
+  // Crypto ETF
+  IBIT:  { name: 'iShares Bitcoin ETF', sector: 'Crypto / Bitcoin',beta: 2.5,  cap: 'etf'   },
+  FBTC:  { name: 'Fidelity Bitcoin ETF',sector: 'Crypto / Bitcoin',beta: 2.5,  cap: 'etf'   },
+  BITO:  { name: 'Bitcoin Strategy ETF',sector: 'Crypto / Bitcoin',beta: 2.5,  cap: 'etf'   },
+};
+
+const SECTOR_COLORS = {
+  'Big Tech':          '#4d9fff',
+  'Semiconductors':    '#a78bfa',
+  'Software / SaaS':   '#60a5fa',
+  'AI & Robotics':     '#c084fc',
+  'Social Media':      '#f472b6',
+  'Fintech':           '#34d399',
+  'Crypto / Bitcoin':  '#f59e0b',
+  'Banking':           '#fbbf24',
+  'Healthcare':        '#06d6a0',
+  'Biotech':           '#10b981',
+  'E-Commerce':        '#ff6b35',
+  'Retail':            '#fb923c',
+  'Apparel':           '#f87171',
+  'Food & Beverage':   '#fca5a5',
+  'Consumer Staples':  '#9b59b6',
+  'EVs & Autos':       '#22d3ee',
+  'Entertainment':     '#e91e8c',
+  'Sports Betting':    '#ec4899',
+  'Travel & Mobility': '#38bdf8',
+  'Pets & Specialty':  '#a3e635',
+  'China / Emerging':  '#ef4444',
+  'International':     '#f97316',
+  'Oil & Gas':         '#e67e22',
+  'Clean Energy':      '#4ade80',
+  'Gold & Metals':     '#fcd34d',
+  'Defense':           '#94a3b8',
+  'Industrials':       '#78716c',
+  'Real Estate':       '#e74c3c',
+  'Utilities':         '#1abc9c',
+  'Materials':         '#d97706',
+  'Broad Market':      '#64748b',
+  'Small-Caps':        '#8b5cf6',
+  'Dividends':         '#059669',
+  'Bonds':             '#475569',
+  'Other':             '#4b5563',
+};
+
+const ETF_DB = {
+  aggressive: [
+    { ticker: 'QQQ', name: 'Invesco NASDAQ-100 ETF', desc: 'Top 100 non-financial NASDAQ stocks', exp: '0.20%', sectors: ['Technology','Comm. Services'], beta: 1.3 },
+    { ticker: 'ARKK', name: 'ARK Innovation ETF', desc: 'Disruptive innovation companies', exp: '0.75%', sectors: ['Technology'], beta: 2.1 },
+    { ticker: 'SOXS', name: 'SOXX — iShares Semiconductor', desc: 'Semiconductor industry exposure', exp: '0.35%', sectors: ['Technology'], beta: 1.9 },
+    { ticker: 'XBIO', name: 'SPDR S&P Biotech ETF', desc: 'US biotech & life science', exp: '0.35%', sectors: ['Healthcare'], beta: 1.6 },
+    { ticker: 'JETS', name: 'US Global Jets ETF', desc: 'Airlines & aviation sector', exp: '0.60%', sectors: ['Industrials','Consumer Disc.'], beta: 1.7 },
+    { ticker: 'IWM', name: 'iShares Russell 2000 ETF', desc: 'Small-cap US equities', exp: '0.19%', sectors: ['all'], beta: 1.4 },
+    { ticker: 'MTUM', name: 'iShares MSCI USA Momentum', desc: 'High-momentum US stocks', exp: '0.15%', sectors: ['Technology','Financials'], beta: 1.3 },
+    { ticker: 'CIBR', name: 'First Trust Cybersecurity', desc: 'Cybersecurity companies', exp: '0.60%', sectors: ['Technology'], beta: 1.4 },
+  ],
+  moderate: [
+    { ticker: 'SPY', name: 'SPDR S&P 500 ETF', desc: 'Broad US large-cap exposure', exp: '0.09%', sectors: ['all'], beta: 1.0 },
+    { ticker: 'VTI', name: 'Vanguard Total Market ETF', desc: 'Entire US stock market', exp: '0.03%', sectors: ['all'], beta: 1.0 },
+    { ticker: 'VIG', name: 'Vanguard Dividend Appreciation', desc: 'Dividend growth stocks', exp: '0.06%', sectors: ['Financials','Consumer Stap.','Healthcare'], beta: 0.85 },
+    { ticker: 'QUAL', name: 'iShares MSCI USA Quality', desc: 'High quality factor stocks', exp: '0.15%', sectors: ['Technology','Healthcare'], beta: 0.9 },
+    { ticker: 'SCHD', name: 'Schwab US Dividend Equity', desc: 'High-yield US dividend stocks', exp: '0.06%', sectors: ['Financials','Energy','Consumer Stap.'], beta: 0.8 },
+    { ticker: 'AOA', name: 'iShares Core Aggressive Alloc', desc: '80% equity, 20% bond mix', exp: '0.15%', sectors: ['all'], beta: 0.9 },
+    { ticker: 'XLF', name: 'Financial Select Sector SPDR', desc: 'S&P 500 financials', exp: '0.09%', sectors: ['Financials'], beta: 1.2 },
+    { ticker: 'XLV', name: 'Health Care Select Sector', desc: 'S&P 500 healthcare', exp: '0.09%', sectors: ['Healthcare'], beta: 0.65 },
+    { ticker: 'XLE', name: 'Energy Select Sector SPDR', desc: 'S&P 500 energy companies', exp: '0.09%', sectors: ['Energy'], beta: 0.95 },
+    { ticker: 'ONEQ', name: 'Fidelity NASDAQ Composite', desc: 'Full NASDAQ market cap', exp: '0.21%', sectors: ['Technology','Consumer Disc.'], beta: 1.1 },
+  ],
+  conservative: [
+    { ticker: 'BND', name: 'Vanguard Total Bond Market', desc: 'Investment-grade US bonds', exp: '0.03%', sectors: [], beta: 0.1 },
+    { ticker: 'AGG', name: 'iShares Core US Aggregate Bond', desc: 'Broad US bond market', exp: '0.03%', sectors: [], beta: 0.05 },
+    { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', desc: 'Low-cost S&P 500 tracking', exp: '0.03%', sectors: ['all'], beta: 1.0 },
+    { ticker: 'VTIP', name: 'Vanguard Short-Term TIPS', desc: 'Inflation-protected securities', exp: '0.04%', sectors: [], beta: 0.05 },
+    { ticker: 'USMV', name: 'iShares MSCI USA Min Vol', desc: 'Low-volatility US equities', exp: '0.15%', sectors: ['Healthcare','Utilities'], beta: 0.65 },
+    { ticker: 'VYM', name: 'Vanguard High Dividend Yield', desc: 'High-yield dividend payers', exp: '0.06%', sectors: ['Financials','Consumer Stap.'], beta: 0.75 },
+    { ticker: 'GLD', name: 'SPDR Gold Shares', desc: 'Gold commodity exposure', exp: '0.40%', sectors: [], beta: 0.05 },
+    { ticker: 'TLT', name: 'iShares 20+ Year Treasury', desc: 'Long-duration US treasuries', exp: '0.15%', sectors: [], beta: -0.1 },
+  ]
+};
+
+// ─── STATE ──────────────────────────────────────────────
+let holdings = [];
+
+// ─── HELPERS ────────────────────────────────────────────
+function totalAllocation() {
+  return holdings.reduce((s, h) => s + h.pct, 0);
+}
+
+function getPortfolioProfile() {
+  const sectors = {};
+  let weightedBeta = 0;
+  const total = totalAllocation() || 1;
+  holdings.forEach(h => {
+    const info = STOCK_DB[h.ticker] || { sector: 'Other', beta: 1.0 };
+    // Store the sector on the holding so the list can show it
+    h.sector = info.sector;
+    sectors[info.sector] = (sectors[info.sector] || 0) + h.pct;
+    weightedBeta += info.beta * (h.pct / 100);
+  });
+  // Normalize to portfolio total (handles <100% allocation)
+  const normalized = {};
+  Object.entries(sectors).forEach(([s, v]) => {
+    normalized[s] = Math.round((v / total) * 100 * 10) / 10;
+  });
+  return { sectors: normalized, beta: weightedBeta };
+}
+
+function calcRisk(beta) {
+  if (beta > 1.3) return 'High';
+  if (beta > 0.9) return 'Moderate';
+  return 'Low';
+}
+
+// ─── ADD / REMOVE ────────────────────────────────────────
+function addStock() {
+  const tickerEl = document.getElementById('tickerInput');
+  const pctEl = document.getElementById('pctInput');
+  const errorEl = document.getElementById('errorMsg');
+  
+  const ticker = tickerEl.value.trim().toUpperCase();
+  const pct = parseFloat(pctEl.value);
+  
+  errorEl.textContent = '';
+  
+  if (!ticker) { errorEl.textContent = 'Enter a ticker symbol.'; return; }
+  if (!pct || pct <= 0) { errorEl.textContent = 'Enter a valid percentage.'; return; }
+  if (holdings.find(h => h.ticker === ticker)) { errorEl.textContent = `${ticker} already added.`; return; }
+  if (totalAllocation() + pct > 100) { errorEl.textContent = `Allocation would exceed 100%.`; return; }
+  
+  const info = STOCK_DB[ticker] || { name: ticker, sector: 'Other', beta: 1.0, cap: 'unknown' };
+  holdings.push({ ticker, pct, ...info });
+  
+  tickerEl.value = '';
+  pctEl.value = '';
+  tickerEl.focus();
+  
+  renderHoldings();
+}
+
+function removeStock(ticker) {
+  holdings = holdings.filter(h => h.ticker !== ticker);
+  renderHoldings();
+}
+
+function renderHoldings() {
+  const list = document.getElementById('stockList');
+  const empty = document.getElementById('emptyState');
+  const summary = document.getElementById('portfolioSummary');
+  const btn = document.getElementById('analyzeBtn');
+  
+  if (holdings.length === 0) {
+    list.innerHTML = '<div class="empty-state" id="emptyState">No holdings added yet.</div>';
+    summary.style.display = 'none';
+    btn.disabled = true;
+    return;
+  }
+  
+  list.innerHTML = holdings.map(h => `
+    <div class="stock-item">
+      <span class="stock-ticker">${h.ticker}</span>
+      <span class="stock-info">
+        <span class="stock-sector">${h.sector}</span>
+        <span class="stock-weight">${h.pct}%</span>
+      </span>
+      <button class="btn-remove" onclick="removeStock('${h.ticker}')" title="Remove">×</button>
+    </div>
+  `).join('');
+  
+  const total = totalAllocation();
+  const { beta } = getPortfolioProfile();
+  
+  document.getElementById('holdingCount').textContent = holdings.length;
+  document.getElementById('allocTotal').textContent = total + '%';
+  document.getElementById('riskLabel').textContent = calcRisk(beta);
+  summary.style.display = 'flex';
+  btn.disabled = total < 10;
+}
+
+// ─── HIGH-CONVICTION STOCK PICKS DATABASE ────────────────
+// Curated individual stocks recommended for diversification gaps.
+// Each has sectors it fills, a rationale, and a risk tier.
+const STOCK_PICKS = [
+  // Tech / Growth
+  { ticker:'NVDA',  name:'NVIDIA',           sector:'Semiconductors',   risk:'High',   desc:'AI chip dominance, data center growth',  avoidIfHeld:['NVDA','SMH','SOXX'] },
+  { ticker:'MSFT',  name:'Microsoft',         sector:'Big Tech',         risk:'Medium', desc:'Cloud, AI, enterprise software leader',  avoidIfHeld:['MSFT','QQQ','XLK'] },
+  { ticker:'PLTR',  name:'Palantir',          sector:'AI & Robotics',    risk:'High',   desc:'AI/data analytics, govt & enterprise',   avoidIfHeld:['PLTR','ARKK'] },
+  { ticker:'ORCL',  name:'Oracle',            sector:'Software / SaaS',  risk:'Medium', desc:'Cloud database & AI infrastructure',     avoidIfHeld:['ORCL','IGV'] },
+  { ticker:'AMD',   name:'AMD',               sector:'Semiconductors',   risk:'High',   desc:'CPU/GPU challenger to Intel & NVIDIA',   avoidIfHeld:['AMD','NVDA','SOXX'] },
+  // Finance
+  { ticker:'V',     name:'Visa',              sector:'Banking',          risk:'Low',    desc:'Global payments network, recession-lite', avoidIfHeld:['V','MA','XLF'] },
+  { ticker:'COIN',  name:'Coinbase',          sector:'Crypto / Bitcoin', risk:'Very High',desc:'Crypto exchange, direct crypto exposure', avoidIfHeld:['COIN','IBIT','BITO'] },
+  { ticker:'SQ',    name:'Block (Square)',    sector:'Fintech',          risk:'High',   desc:'Payments + Bitcoin ecosystem play',       avoidIfHeld:['SQ','HOOD','FINX'] },
+  // Healthcare
+  { ticker:'LLY',   name:'Eli Lilly',         sector:'Healthcare',       risk:'Medium', desc:'GLP-1 weight loss drugs, massive growth', avoidIfHeld:['LLY','XLV'] },
+  { ticker:'UNH',   name:'UnitedHealth',      sector:'Healthcare',       risk:'Low',    desc:'Largest US health insurer, stable cash flow', avoidIfHeld:['UNH','XLV'] },
+  { ticker:'MRNA',  name:'Moderna',           sector:'Biotech',          risk:'High',   desc:'mRNA platform beyond COVID vaccines',    avoidIfHeld:['MRNA','XBI'] },
+  // Consumer / Retail
+  { ticker:'AMZN',  name:'Amazon',            sector:'E-Commerce',       risk:'Medium', desc:'E-commerce + AWS cloud dominance',       avoidIfHeld:['AMZN','QQQ'] },
+  { ticker:'COST',  name:'Costco',            sector:'Retail',           risk:'Low',    desc:'Membership retail, recession-resistant', avoidIfHeld:['COST','XLP'] },
+  { ticker:'SBUX',  name:'Starbucks',         sector:'Food & Beverage',  risk:'Medium', desc:'Brand recovery + international expansion', avoidIfHeld:['SBUX'] },
+  // Energy / Commodities
+  { ticker:'XOM',   name:'ExxonMobil',        sector:'Oil & Gas',        risk:'Medium', desc:'Dividend king, energy price hedge',       avoidIfHeld:['XOM','XLE'] },
+  { ticker:'NEE',   name:'NextEra Energy',    sector:'Clean Energy',     risk:'Low',    desc:'Largest renewable energy utility in US',  avoidIfHeld:['NEE','ICLN'] },
+  { ticker:'NEM',   name:'Newmont',           sector:'Gold & Metals',    risk:'Medium', desc:'Gold mining hedge against inflation',     avoidIfHeld:['NEM','GLD','GDX'] },
+  // Industrials / Defense
+  { ticker:'LMT',   name:'Lockheed Martin',   sector:'Defense',          risk:'Low',    desc:'Defense spending, geopolitical hedge',   avoidIfHeld:['LMT','XLI'] },
+  { ticker:'CAT',   name:'Caterpillar',       sector:'Industrials',      risk:'Medium', desc:'Infrastructure spending + global demand', avoidIfHeld:['CAT','XLI'] },
+  // Dividend / Stable
+  { ticker:'JNJ',   name:'Johnson & Johnson', sector:'Healthcare',       risk:'Low',    desc:'Diversified pharma + medtech, steady div', avoidIfHeld:['JNJ','XLV'] },
+  { ticker:'KO',    name:'Coca-Cola',         sector:'Consumer Staples', risk:'Low',    desc:'Recession-proof consumer staple, dividend', avoidIfHeld:['KO','XLP'] },
+  { ticker:'PG',    name:"Procter & Gamble",  sector:'Consumer Staples', risk:'Low',    desc:'Household goods, 60+ year dividend streak', avoidIfHeld:['PG','XLP'] },
+  // Real Estate
+  { ticker:'PLD',   name:'Prologis',          sector:'Real Estate',      risk:'Low',    desc:'E-commerce warehouse REIT, stable income', avoidIfHeld:['PLD','XLRE'] },
+  // International
+  { ticker:'BABA',  name:'Alibaba',           sector:'China / Emerging', risk:'High',   desc:'Chinese e-commerce at deep discount',    avoidIfHeld:['BABA','VWO','KWEB'] },
+  // Travel
+  { ticker:'ABNB',  name:'Airbnb',            sector:'Travel & Mobility',risk:'Medium', desc:'Asset-light travel platform, high margins', avoidIfHeld:['ABNB'] },
+  { ticker:'UBER',  name:'Uber',              sector:'Travel & Mobility',risk:'Medium', desc:'Ride-share + delivery global network',   avoidIfHeld:['UBER'] },
+];
+
+const RISK_COLORS = {
+  'Very High': '#ff2d55',
+  'High':      '#ff6b35',
+  'Medium':    '#ffd166',
+  'Low':       '#06d6a0',
+};
+
+// ─── SECTOR STRATEGY TARGETS ─────────────────────────────
+// Target % allocation per sector for each strategy style
+// Aggressive = growth-heavy, Balanced = diversified, Passive = defensive/stable
+const SECTOR_TARGETS = {
+  'Big Tech':          { agg: 28, mod: 18, con: 10 },
+  'Semiconductors':    { agg: 14, mod:  8, con:  3 },
+  'Software / SaaS':   { agg: 12, mod:  7, con:  3 },
+  'AI & Robotics':     { agg: 10, mod:  4, con:  1 },
+  'Social Media':      { agg:  6, mod:  3, con:  1 },
+  'Fintech':           { agg:  8, mod:  4, con:  1 },
+  'Crypto / Bitcoin':  { agg:  5, mod:  2, con:  0 },
+  'Banking':           { agg:  6, mod: 10, con:  8 },
+  'Healthcare':        { agg:  4, mod: 10, con: 14 },
+  'Biotech':           { agg:  5, mod:  3, con:  1 },
+  'E-Commerce':        { agg:  6, mod:  5, con:  3 },
+  'Retail':            { agg:  2, mod:  4, con:  5 },
+  'Apparel':           { agg:  2, mod:  2, con:  1 },
+  'Food & Beverage':   { agg:  1, mod:  3, con:  5 },
+  'Consumer Staples':  { agg:  1, mod:  4, con:  9 },
+  'EVs & Autos':       { agg:  5, mod:  3, con:  1 },
+  'Entertainment':     { agg:  4, mod:  3, con:  2 },
+  'Sports Betting':    { agg:  3, mod:  1, con:  0 },
+  'Travel & Mobility': { agg:  4, mod:  3, con:  1 },
+  'Pets & Specialty':  { agg:  2, mod:  1, con:  0 },
+  'China / Emerging':  { agg:  4, mod:  3, con:  2 },
+  'International':     { agg:  2, mod:  4, con:  5 },
+  'Oil & Gas':         { agg:  2, mod:  4, con:  4 },
+  'Clean Energy':      { agg:  3, mod:  2, con:  1 },
+  'Gold & Metals':     { agg:  1, mod:  3, con:  6 },
+  'Defense':           { agg:  1, mod:  2, con:  3 },
+  'Industrials':       { agg:  2, mod:  3, con:  4 },
+  'Real Estate':       { agg:  1, mod:  3, con:  6 },
+  'Utilities':         { agg:  0, mod:  2, con:  7 },
+  'Materials':         { agg:  1, mod:  2, con:  2 },
+  'Broad Market':      { agg:  0, mod:  5, con: 10 },
+  'Small-Caps':        { agg:  3, mod:  2, con:  1 },
+  'Dividends':         { agg:  0, mod:  3, con:  8 },
+  'Bonds':             { agg:  0, mod:  3, con: 12 },
+  'Other':             { agg:  0, mod:  0, con:  0 },
+};
+
+// ─── ANALYZE ─────────────────────────────────────────────
+function scoreETF(etf, profile) {
+  let score = 70;
+  const mySectors = Object.keys(profile.sectors);
+  
+  // Penalize overlap with heavy sectors
+  if (etf.sectors.includes('all')) {
+    score += 5;
+  } else {
+    etf.sectors.forEach(s => {
+      if (profile.sectors[s] && profile.sectors[s] > 30) score -= 10; // already overweight
+      if (profile.sectors[s] && profile.sectors[s] < 10) score += 8;  // underweight: good
+      if (!profile.sectors[s]) score += 12; // not exposed: great
+    });
+  }
+  
+  return Math.min(99, Math.max(50, score));
+}
+
+function getTopETFs(category, profile, n) {
+  const pool = ETF_DB[category];
+  const ownTickers = holdings.map(h => h.ticker);
+  return pool
+    .filter(e => !ownTickers.includes(e.ticker))
+    .map(e => ({ ...e, score: scoreETF(e, profile) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n);
+}
+
+function matchLabel(score) {
+  if (score >= 85) return '<span class="match-score match-high">✦ Great fit</span>';
+  return '<span class="match-score match-med">◈ Good fit</span>';
+}
+
+function analyze() {
+  pinnedStrategy = null;
+  document.querySelectorAll('.legend-item.hoverable').forEach(el => {
+    el.classList.remove('active','active-agg','active-mod','active-con');
+  });
+  const profile = getPortfolioProfile();
+  const { sectors, beta } = profile;
+  const totalPct = totalAllocation();
+  
+  const aggressiveETFs = getTopETFs('aggressive', profile, 3);
+  const moderateETFs = getTopETFs('moderate', profile, 3);
+  const conservativeETFs = getTopETFs('conservative', profile, 3);
+  
+  const SECTOR_ICONS = {
+    'Gold & Metals':'🥇','Crypto / Bitcoin':'₿','Bonds':'📄','Broad Market':'📊',
+    'Big Tech':'💻','Semiconductors':'⚡','AI & Robotics':'🤖','Fintech':'💳',
+    'Banking':'🏦','Healthcare':'🏥','Biotech':'🧬','Entertainment':'🎬',
+    'Sports Betting':'🎲','EVs & Autos':'🚗','Oil & Gas':'🛢️','Clean Energy':'☀️',
+    'China / Emerging':'🌏','Travel & Mobility':'✈️','Software / SaaS':'☁️',
+    'Social Media':'📱','E-Commerce':'🛒','Retail':'🏪','Apparel':'👟',
+    'Defense':'🛡️','Real Estate':'🏢','Utilities':'💡','Dividends':'💰',
+    'Small-Caps':'📈','Industrials':'⚙️','Materials':'⛏️','Food & Beverage':'🍔',
+    'Consumer Staples':'🛒','International':'🌍','Pets & Specialty':'🐾',
+  };
+
+  // Sectors the user holds
+  const heldSectors = Object.entries(sectors)
+    .filter(([,v]) => v > 0)
+    .sort((a,b) => b[1]-a[1]);
+
+  // Missing sectors: not held but recommended by at least one strategy
+  const missingSectors = Object.entries(SECTOR_TARGETS)
+    .filter(([name, t]) => {
+      const held = (sectors[name] || 0) > 0;
+      const worthShowing = t.agg >= 3 || t.mod >= 3 || t.con >= 3;
+      return !held && worthShowing;
+    })
+    .sort((a, b) => {
+      // Sort by highest single strategy recommendation
+      const maxA = Math.max(a[1].agg, a[1].bal, a[1].pas);
+      const maxB = Math.max(b[1].agg, b[1].bal, b[1].pas);
+      return maxB - maxA;
+    })
+    .slice(0, 8); // cap at 8 missing sectors
+
+  // Shared scale across both held + missing (use held max for consistency)
+  const maxVal = Math.max(...heldSectors.map(([,v]) => v), 1);
+  const scale  = v => Math.min(100, Math.round((v / maxVal) * 100));
+
+  const makeBar = (name, cur, isMissing) => {
+    const t     = SECTOR_TARGETS[name] || { agg: 0, mod: 0, con: 0 };
+    const color = SECTOR_COLORS[name]  || '#64748b';
+    const icon  = SECTOR_ICONS[name]   || '◆';
+    const aggPct = scale(t.agg);
+    const balPct = scale(t.mod);
+    const pasPct = scale(t.con);
+    const missingClass = isMissing ? ' missing' : '';
+    const trackClass   = isMissing ? ' empty' : '';
+    const pctLabel     = isMissing ? '—' : cur + '%';
+
+    return `
+      <div class="sector-row${missingClass}">
+        <span class="sector-name">${icon} ${name}</span>
+        <div class="sector-bar-track${trackClass}">
+          ${!isMissing ? `<div class="sector-bar-fill" style="width:${scale(cur)}%;background:${color}"></div>` : ''}
+          <div class="sector-overlay agg" style="width:${aggPct}%"></div>
+          <div class="sector-overlay mod" style="width:${balPct}%"></div>
+          <div class="sector-overlay con" style="width:${pasPct}%"></div>
+        </div>
+        <span class="sector-pct">${pctLabel}</span>
+      </div>`;
+  };
+
+  const heldBars   = heldSectors.map(([name, cur]) => makeBar(name, cur, false)).join('');
+  const missingBars = missingSectors.length > 0
+    ? `<div class="sector-divider"><span>Not in your portfolio</span></div>`
+      + missingSectors.map(([name, t]) => makeBar(name, 0, true)).join('')
+    : '';
+
+  const sectorBars = heldBars + missingBars;
+
+  // ── Score & filter stock picks per strategy ──
+  const ownedTickers = holdings.map(h => h.ticker);
+  const ownedSectors = Object.keys(sectors).filter(s => (sectors[s]||0) > 5);
+  const safeDesc = s => s.replace(/'/g, "\\'");
+
+  function getScoredPicks(strategyKey) {
+    const riskAllowed = {
+      aggressive:   ['High','Very High','Medium'],
+      moderate:     ['Medium','Low','High'],
+      conservative: ['Low','Medium'],
+    }[strategyKey] || ['Medium'];
+
+    return STOCK_PICKS
+      .filter(p => {
+        if (ownedTickers.includes(p.ticker)) return false;
+        if (p.avoidIfHeld.some(t => ownedTickers.includes(t))) return false;
+        if (!riskAllowed.includes(p.risk)) return false;
+        return true;
+      })
+      .map(p => {
+        let score = 50;
+        if (!ownedSectors.includes(p.sector)) score += 28;
+        else if ((sectors[p.sector]||0) < 10) score += 14;
+        if (p.risk === 'Low') score += 6;
+        if (p.risk === 'Very High') score -= 8;
+        return { ...p, score, isStock: true };
+      })
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 2);
+  }
+
+  const strategyCard = (type, label, desc, etfs) => {
+    const picks = getScoredPicks(type);
+    const allItems = [
+      ...etfs.map(e => ({ ...e, isStock: false })),
+      ...picks,
+    ].sort((a,b) => b.score - a.score).slice(0, 5);
+
+    const itemHTML = allItems.map(item => {
+      if (!item.isStock) {
+        return `
+          <div class="etf-item" id="etf-${item.ticker}-${type}" onclick="toggleEtfDrawer('${item.ticker}', '${type}', '${item.name}', '${item.desc}')">
+            <div class="etf-item-header">
+              <div class="ticker-with-tag">
+                <span class="etf-ticker">${item.ticker}</span>
+                <span class="item-type-tag tag-etf">ETF</span>
+              </div>
+              <div class="etf-details">
+                <h4>${item.name}</h4>
+                <p>${item.desc}</p>
+              </div>
+              <div class="etf-meta">
+                <div class="etf-exp">ER: ${item.exp}</div>
+                ${matchLabel(item.score)}
+              </div>
+            </div>
+            <div class="etf-hint">&#10022; Why this for my portfolio?</div>
+            <div class="etf-drawer" id="drawer-${item.ticker}-${type}">
+              <div class="etf-drawer-inner">
+                <div class="etf-drawer-label">&#9672; Why this ETF?</div>
+                <div class="etf-drawer-text" id="drawer-text-${item.ticker}-${type}"></div>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        return `
+          <div class="pick-item" id="pick-${item.ticker}-${type}" onclick="togglePickDrawer('${item.ticker}', '${item.name}', '${item.sector}', '${safeDesc(item.desc)}')">
+            <div class="pick-item-header">
+              <div class="ticker-with-tag">
+                <span class="pick-ticker">${item.ticker}</span>
+                <span class="item-type-tag tag-stock">STOCK</span>
+              </div>
+              <div class="pick-details">
+                <h4>${item.name}</h4>
+                <p>${item.desc}</p>
+              </div>
+              <div class="pick-meta">
+                <div class="pick-sector-tag">${item.sector}</div>
+                <div class="pick-risk" style="color:${RISK_COLORS[item.risk]||'#888'}">${item.risk} Risk</div>
+              </div>
+            </div>
+            <div class="pick-hint">&#10022; Why this for my portfolio?</div>
+            <div class="pick-drawer" id="pick-drawer-${item.ticker}-${type}">
+              <div class="pick-drawer-inner">
+                <div class="pick-drawer-label">&#9672; Why this pick?</div>
+                <div class="pick-drawer-text" id="pick-drawer-text-${item.ticker}-${type}"></div>
+              </div>
+            </div>
+          </div>`;
+      }
+    }).join('');
+
+    return `
+      <div class="strategy-card">
+        <div class="strategy-header">
+          <div class="strategy-label">
+            <span class="strategy-badge badge-${type}">${label}</span>
+          </div>
+          <span class="strategy-desc">${desc}</span>
+        </div>
+        <div class="etf-list">${itemHTML}</div>
+      </div>`;
+  };
+
+  document.getElementById('resultsPanel').innerHTML = `
+    <div class="analysis-bar">
+      <div class="analysis-bar-header">
+        <h3>Portfolio Breakdown &amp; Strategies</h3>
+        <div class="breakdown-legend">
+          <div class="legend-item"><div class="legend-dot legend-dot-current"></div>You Own</div>
+          <div class="legend-hint">&#8212; hover a strategy to overlay targets</div>
+          <div class="legend-item hoverable" data-strategy="agg" onmouseenter="showStrategy('agg')" onmouseleave="hideStrategy('agg')" onclick="toggleStrategy('agg')">
+            <div class="legend-tick legend-tick-agg"></div>Aggressive
+            <div class="strategy-tooltip">
+              <div class="tooltip-label agg">&#9889; Aggressive</div>
+              <div class="tooltip-body">High-growth sectors with above-average volatility. Heavy tech, AI, semis, and emerging markets. Expects significant drawdowns but maximum long-term upside.</div>
+              <div class="tooltip-note">Best for: 10+ year horizon, high risk tolerance, can stomach 40%+ drops without panic selling.</div>
+            </div>
+          </div>
+          <div class="legend-item hoverable" data-strategy="mod" onmouseenter="showStrategy('mod')" onmouseleave="hideStrategy('mod')" onclick="toggleStrategy('mod')">
+            <div class="legend-tick legend-tick-mod"></div>Moderate
+            <div class="strategy-tooltip">
+              <div class="tooltip-label mod">&#9670; Moderate</div>
+              <div class="tooltip-body">Mix of growth and defensive sectors. Spreads risk across tech, financials, healthcare, and staples. Aims for steady compounding with manageable volatility.</div>
+              <div class="tooltip-note">Best for: 5-10 year horizon, moderate risk tolerance. The S&amp;P 500 is basically this, proven over decades.</div>
+            </div>
+          </div>
+          <div class="legend-item hoverable" data-strategy="con" onmouseenter="showStrategy('con')" onmouseleave="hideStrategy('con')" onclick="toggleStrategy('con')">
+            <div class="legend-tick legend-tick-con"></div>Conservative
+            <div class="strategy-tooltip">
+              <div class="tooltip-label con">&#9632; Conservative</div>
+              <div class="tooltip-body">Defensive, income-focused sectors: bonds, utilities, healthcare, dividends, real estate. Prioritizes capital preservation over growth. Lower highs, but also lower lows.</div>
+              <div class="tooltip-note">Best for: near retirement, income needs, or simply sleeping well at night. Boring is underrated.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sector-bars" id="sectorBarsEl">${sectorBars}</div>
+    </div>
+    ${strategyCard('aggressive','Aggressive','High growth, high risk', aggressiveETFs)}
+    ${strategyCard('moderate','Moderate','Growth with stability', moderateETFs)}
+    ${strategyCard('conservative','Conservative','Capital preservation', conservativeETFs)}
+    <div class="disclaimer-footer">
+      &#9432; For informational purposes only. Not financial advice. Past performance does not guarantee future results. Always consult a qualified financial advisor before making investment decisions.
+    </div>
+  `;
+}
+
+// ─── ETF DRAWER ──────────────────────────────────────────
+const drawerCache = {};
+
+async function toggleEtfDrawer(ticker, strategy, name, desc) {
+  const itemEl   = document.getElementById(`etf-${ticker}-${strategy}`);
+  const drawerEl = document.getElementById(`drawer-${ticker}-${strategy}`);
+  const textEl   = document.getElementById(`drawer-text-${ticker}-${strategy}`);
+  const isOpen   = itemEl.classList.contains('open');
+
+  // Close all other open drawers
+  document.querySelectorAll('.etf-item.open').forEach(el => el.classList.remove('open'));
+
+  if (isOpen) return; // was open — just close it
+
+  itemEl.classList.add('open');
+
+  const cacheKey = `${ticker}-${strategy}`;
+  if (drawerCache[cacheKey]) {
+    textEl.innerHTML = drawerCache[cacheKey];
+    return;
+  }
+
+  // Build context from current holdings
+  const holdingSummary = holdings.map(h => `${h.ticker} (${h.pct}% — ${h.sector})`).join(', ');
+  const sectorSummary  = (() => {
+    const profile = getPortfolioProfile();
+    return Object.entries(profile.sectors)
+      .sort((a,b) => b[1]-a[1])
+      .map(([s,p]) => `${s}: ${p}%`)
+      .join(', ');
+  })();
+
+  textEl.innerHTML = `<div class="etf-drawer-loading"><div class="mini-spinner"></div> Analyzing your portfolio...</div>`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 220,
+        messages: [{
+          role: 'user',
+          content: `I'm analyzing a portfolio for diversification. Here are the current holdings: ${holdingSummary}.
+
+Current sector exposure: ${sectorSummary}.
+
+The user is considering adding ${ticker} (${name} — ${desc}) as part of a ${strategy} strategy.
+
+In 2-3 sentences, explain specifically WHY this ETF would be a smart addition to THIS particular portfolio. Reference their actual holdings and sector gaps. Be direct, specific, and conversational — no bullet points, no headers. Keep it under 60 words.`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const text = (data.content || []).map(b => b.text || '').join('').trim();
+    drawerCache[cacheKey] = text;
+    textEl.textContent = text;
+
+  } catch (err) {
+    textEl.textContent = 'Could not load explanation. Check your connection and try again.';
+  }
+}
+
+// ─── STRATEGY LEGEND HOVER ───────────────────────────────
+let pinnedStrategy = null;
+
+function showStrategy(s) {
+  if (pinnedStrategy) return; // don't override a pinned one
+  const bars = document.getElementById('sectorBarsEl');
+  if (bars) bars.classList.add('show-' + s);
+  // highlight the legend item
+  document.querySelectorAll('.legend-item.hoverable').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`[data-strategy="${s}"]`);
+  if (el) el.classList.add('active');
+}
+
+function hideStrategy(s) {
+  if (pinnedStrategy) return;
+  const bars = document.getElementById('sectorBarsEl');
+  if (bars) bars.classList.remove('show-' + s);
+  document.querySelector(`[data-strategy="${s}"]`)?.classList.remove('active');
+}
+
+function toggleStrategy(s) {
+  const bars = document.getElementById('sectorBarsEl');
+  if (!bars) return;
+  if (pinnedStrategy === s) {
+    // unpin
+    pinnedStrategy = null;
+    bars.classList.remove('show-agg','show-mod','show-con');
+    document.querySelectorAll('.legend-item.hoverable').forEach(el => {
+      el.classList.remove('active','active-agg','active-mod','active-con');
+    });
+  } else {
+    // pin this one
+    pinnedStrategy = s;
+    bars.classList.remove('show-agg','show-mod','show-con');
+    bars.classList.add('show-' + s);
+    document.querySelectorAll('.legend-item.hoverable').forEach(el => {
+      el.classList.remove('active','active-agg','active-mod','active-con');
+    });
+    const el = document.querySelector(`[data-strategy="${s}"]`);
+    if (el) el.classList.add('active', 'active-' + s);
+  }
+}
+
+// ─── STOCK PICK DRAWER ───────────────────────────────────
+const pickCache = {};
+
+async function togglePickDrawer(ticker, name, sector, desc) {
+  const itemEl  = document.getElementById(`pick-${ticker}`);
+  const textEl  = document.getElementById(`pick-drawer-text-${ticker}`);
+  const isOpen  = itemEl.classList.contains('open');
+
+  // Close all open drawers (ETF and pick)
+  document.querySelectorAll('.etf-item.open, .pick-item.open').forEach(el => el.classList.remove('open'));
+
+  if (isOpen) return;
+  itemEl.classList.add('open');
+
+  if (pickCache[ticker]) { textEl.innerHTML = pickCache[ticker]; return; }
+
+  const holdingSummary = holdings.map(h => `${h.ticker} (${h.pct}% — ${h.sector})`).join(', ');
+  const profile = getPortfolioProfile();
+  const sectorSummary = Object.entries(profile.sectors)
+    .sort((a,b) => b[1]-a[1]).map(([s,p]) => `${s}: ${p}%`).join(', ');
+
+  textEl.innerHTML = `<div class="etf-drawer-loading"><div class="mini-spinner"></div> Analyzing your portfolio...</div>`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{ role: 'user', content: `Portfolio: ${holdingSummary}. Sector exposure: ${sectorSummary}.
+
+Why would ${ticker} (${name}, ${sector} sector — ${desc}) be a high-conviction stock pick to complement THIS specific portfolio? Reference their actual holdings and what gap it fills. Be direct and specific, 2-3 sentences, under 60 words. No bullet points.` }]
+      })
+    });
+    const data = await res.json();
+    const text = (data.content||[]).map(b=>b.text||'').join('').trim();
+    pickCache[ticker] = text;
+    textEl.textContent = text;
+  } catch(e) {
+    textEl.textContent = 'Could not load explanation. Try again.';
+  }
+}
+
+// ─── ENTER KEY ───────────────────────────────────────────
+document.getElementById('tickerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    document.getElementById('pctInput').focus();
+  }
+});
+document.getElementById('pctInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addStock();
+});
+
+// ─── SCREENSHOT IMPORT ───────────────────────────────────
+let previewHoldings = [];
+
+// Drag-and-drop support
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processImageFile(file);
+});
+
+async function handleScreenshot(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  await processImageFile(file);
+  event.target.value = '';
+}
+
+async function processImageFile(file) {
+  const overlay = document.getElementById('scanningOverlay');
+  const preview = document.getElementById('importPreview');
+  preview.classList.remove('visible');
+  overlay.classList.add('active');
+
+  try {
+    const base64 = await fileToBase64(file);
+    const mediaType = file.type || 'image/png';
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: base64 }
+            },
+            {
+              type: 'text',
+              text: `This is a screenshot of a stock portfolio. Your job is to extract each holding and calculate its PERCENTAGE of the total portfolio.
+
+STEP 1 - Identify what data is shown:
+  A) If PERCENTAGE values are shown (e.g. "45.2%") → use those directly as pct
+  B) If DOLLAR/VALUE amounts are shown (e.g. "$1,234.56") → sum all values, divide each by total × 100 to get pct
+  C) If SHARE COUNTS are shown (e.g. "51.58 shares") → you MUST estimate market value using approximate current prices:
+     Use these approximate prices (Feb 2026): HOOD≈$45, QQQ≈$490, GLD≈$240, TSLA≈$320, IGV≈$390, RSP≈$170, UBER≈$75, LULU≈$290, BABA≈$110, VWO≈$50, DKNG≈$40, CHWY≈$35, AAPL≈$235, MSFT≈$415, NVDA≈$140, AMZN≈$230, META≈$680, GOOGL≈$200, JPM≈$260, V≈$340, SPY≈$590, VOO≈$540, IWM≈$225, BND≈$73, AGG≈$96, XOM≈$115, BAC≈$47, JNJ≈$155, PFE≈$27, WMT≈$95, DIS≈$115, NFLX≈$1000, COIN≈$280, PLTR≈$90, SOFI≈$14, NIO≈$5, RIVN≈$13, AMC≈$4, GME≈$25
+     For tickers not listed, use a reasonable estimate based on the company type.
+     Multiply shares × price to get estimated value, then calculate percentage of total value.
+
+STEP 2 - Normalize so all pct values sum to exactly 100.
+
+STEP 3 - Respond ONLY with valid JSON, no markdown, no explanation:
+{"holdings":[{"ticker":"HOOD","pct":45.2,"name":"Robinhood"},{"ticker":"QQQ","pct":13.4,"name":"Invesco QQQ"}]}
+
+Rules:
+- ticker: uppercase US stock symbol (1-6 letters/numbers only)
+- pct: number (not string), all values must sum to ~100
+- name: full company or fund name
+- Skip cash, "Cash & Cash Equivalents" unless it has an actual ticker
+- If nothing detected: {"holdings":[],"error":"Could not detect holdings"}\``
+            }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const text = (data.content || []).map(b => b.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    if (!parsed.holdings || parsed.holdings.length === 0) {
+      throw new Error(parsed.error || 'No holdings detected in the image.');
+    }
+
+    const total = parsed.holdings.reduce((s, h) => s + (h.pct || 0), 0);
+    previewHoldings = parsed.holdings.map(h => ({
+      ticker: (h.ticker || '').toUpperCase().replace(/[^A-Z]/g, ''),
+      pct: total > 0 ? Math.round((h.pct / total) * 100 * 10) / 10 : Math.round(100 / parsed.holdings.length * 10) / 10,
+      name: h.name || h.ticker
+    })).filter(h => h.ticker.length >= 1 && h.ticker.length <= 6);
+
+    renderPreview();
+
+  } catch (err) {
+    console.error(err);
+    alert('Could not parse the screenshot: ' + err.message + '\n\nTip: Try a clearer screenshot showing ticker symbols and values.');
+  } finally {
+    overlay.classList.remove('active');
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPreview() {
+  const preview = document.getElementById('importPreview');
+  const container = document.getElementById('previewItems');
+  const note = document.getElementById('importNote');
+
+  if (previewHoldings.length === 0) {
+    preview.classList.remove('visible');
+    return;
+  }
+
+  const totalPct = previewHoldings.reduce((s, h) => s + h.pct, 0);
+
+  container.innerHTML = previewHoldings.map((h, i) => `
+    <div class="preview-item" id="previewItem-${i}">
+      <span class="preview-ticker">${h.ticker}</span>
+      <span class="preview-name">${h.name}</span>
+      <div class="preview-pct-wrapper">
+        <input class="preview-pct-input" type="number" value="${h.pct}" min="0.1" max="100" step="0.1"
+          onchange="updatePreviewPct(${i}, this.value)" />
+        <span class="preview-pct-symbol">%</span>
+      </div>
+      <button class="btn-preview-remove" onclick="removePreviewItem(${i})">×</button>
+    </div>
+  `).join('');
+
+  note.textContent = previewHoldings.length + ' holdings detected \u00b7 Total: ' + totalPct.toFixed(1) + '% \u00b7 Adjust if needed, then click "Add All"';
+  preview.classList.add('visible');
+}
+
+function updatePreviewPct(i, val) {
+  previewHoldings[i].pct = parseFloat(val) || 0;
+  const totalPct = previewHoldings.reduce((s, h) => s + h.pct, 0);
+  document.getElementById('importNote').textContent =
+    previewHoldings.length + ' holdings \u00b7 Total: ' + totalPct.toFixed(1) + '%';
+}
+
+function removePreviewItem(i) {
+  previewHoldings.splice(i, 1);
+  renderPreview();
+}
+
+function importAll() {
+  let skipped = 0;
+  previewHoldings.forEach(h => {
+    if (!h.ticker || h.pct <= 0) { skipped++; return; }
+    if (holdings.find(e => e.ticker === h.ticker)) { skipped++; return; }
+    if (totalAllocation() + h.pct > 101) { skipped++; return; }
+    const info = STOCK_DB[h.ticker] || { name: h.name || h.ticker, sector: 'Other', beta: 1.0, cap: 'unknown' };
+    holdings.push({ ticker: h.ticker, pct: h.pct, ...info });
+  });
+
+  previewHoldings = [];
+  document.getElementById('importPreview').classList.remove('visible');
+  renderHoldings();
+
+  if (skipped > 0) {
+    document.getElementById('errorMsg').textContent = skipped + ' item(s) skipped (duplicates or exceeded 100%).';
+  }
+}
+</script>
+</body>
+</html>
